@@ -4,6 +4,7 @@ import Header from '../components/Header';
 import MusicCard from '../components/MusicCard';
 import Loading from './Loading';
 import getMusics from '../services/musicsAPI';
+import { addSong } from '../services/favoriteSongsAPI';
 
 class Album extends Component {
   constructor() {
@@ -22,6 +23,14 @@ class Album extends Component {
       loading: false,
     });
   }
+
+  onChange = async ({ target: { name } }) => {
+    this.setState({ loading: true });
+    const { musics } = this.state;
+    const getMusic = musics.find((music) => music.trackId === Number(name));
+    await addSong(getMusic);
+    this.setState({ loading: false });
+  };
 
   render() {
     const { musics, loading } = this.state;
@@ -42,6 +51,8 @@ class Album extends Component {
               <MusicCard
                 musicName={ music.trackName }
                 preview={ music.previewUrl }
+                musicId={ music.trackId }
+                onInputChange={ this.onChange }
               />
             </div>
           )))}
