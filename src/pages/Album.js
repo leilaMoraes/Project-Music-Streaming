@@ -4,7 +4,7 @@ import Header from '../components/Header';
 import MusicCard from '../components/MusicCard';
 import Loading from './Loading';
 import getMusics from '../services/musicsAPI';
-import { addSong, getFavoriteSongs } from '../services/favoriteSongsAPI';
+import { addSong, getFavoriteSongs, removeSong } from '../services/favoriteSongsAPI';
 
 class Album extends Component {
   constructor() {
@@ -45,9 +45,15 @@ class Album extends Component {
     this.setState({ loading: true });
     const { musics } = this.state;
     const getMusic = musics.find((music) => music.trackId === Number(target.name));
-    await addSong(getMusic);
-    this.setState((prevState) => ({ loading: false,
-      saveList: [...prevState.saveList, getMusic] }));
+    if (target.checked === true) {
+      await addSong(getMusic);
+      this.setState((prevState) => ({ loading: false,
+        saveList: [...prevState.saveList, getMusic] }));
+    } else {
+      await removeSong(getMusic);
+      const newList = await getFavoriteSongs();
+      this.setState({ loading: false, saveList: newList });
+    }
   };
 
   render() {
